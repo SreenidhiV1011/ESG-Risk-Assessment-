@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Blume ESG Tool — GIFT Fund V</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;background:#eef2fb;color:#111827;min-height:100vh;display:flex}
+
+/* ── SIDEBAR ── */
+.sidebar{width:200px;min-height:100vh;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100}
+.sidebar-logo{padding:18px 16px 12px;border-bottom:1px solid #f1f5f9}
+.logo-mark{display:flex;align-items:center;gap:8px}
+.logo-star{width:32px;height:32px;background:#1e3a8a;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-star svg{width:18px;height:18px;fill:#fff}
+.logo-text{font-size:1.1rem;font-weight:700;color:#1e3a8a;letter-spacing:-0.02em}
+.sidebar-section{padding:16px 12px 4px;font-size:0.62rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em}
+.sidebar-item{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:7px;margin:1px 8px;cursor:pointer;font-size:0.82rem;color:#475569;font-weight:500;text-decoration:none;transition:all .15s}
+.sidebar-item:hover{background:#f1f5f9;color:#1e3a8a}
+.sidebar-item.active{background:#eff6ff;color:#1d4ed8;font-weight:600}
+.sidebar-item .icon{width:16px;height:16px;opacity:.7;flex-shrink:0}
+.sidebar-item.active .icon{opacity:1}
+.sidebar-badge{margin-left:auto;background:#dbeafe;color:#1d4ed8;font-size:.65rem;font-weight:700;padding:1px 6px;border-radius:10px}
+.sidebar-item.active .sidebar-badge{background:#bfdbfe}
+.sidebar-footer{margin-top:auto;padding:12px 16px;border-top:1px solid #f1f5f9;font-size:.7rem;color:#94a3b8}
+.step-item{position:relative}
+.step-item .step-num{width:18px;height:18px;border-radius:50%;background:#e2e8f0;color:#64748b;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sidebar-item.active .step-num{background:#1d4ed8;color:#fff}
+.sidebar-item.done .step-num{background:#16a34a;color:#fff}
+.sidebar-item.done{color:#374151}
+
+/* ── MAIN ── */
+.main{margin-left:200px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:50}
+.topbar-title{font-size:.82rem;color:#64748b;font-weight:400}
+.topbar-title strong{color:#111827;font-size:.92rem}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+.content{padding:28px;flex:1}
+.page-header{margin-bottom:20px}
+.page-header h1{font-size:1.35rem;font-weight:700;color:#111827;letter-spacing:-.02em}
+.page-header p{font-size:.78rem;color:#64748b;margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+
+/* ── BUTTONS ── */
+.btn{padding:8px 16px;border-radius:7px;font-size:.8rem;font-weight:600;cursor:pointer;border:1.5px solid #e2e8f0;background:#fff;color:#374151;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:#f8fafc}
+.btn-primary{background:#2563eb;color:#fff;border-color:#2563eb}
+.btn-primary:hover{background:#1d4ed8}
+.btn-green{background:#fff;border-color:#16a34a;color:#15803d}
+.btn-green:hover{background:#f0fdf4}
+.btn-sm{padding:6px 12px;font-size:.75rem}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:20px 24px;margin-bottom:16px}
+.card-title{font-size:.9rem;font-weight:600;color:#111827;margin-bottom:3px}
+.card-sub{font-size:.75rem;color:#64748b;margin-bottom:18px}
+
+/* ── FORM ── */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.75rem;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;background:#fff;color:#111827;outline:none;font-family:inherit;transition:border .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#2563eb}
+.field textarea{resize:vertical;min-height:76px;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.geo-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.geo-row label{display:flex;align-items:center;gap:6px;font-size:.83rem;cursor:pointer;color:#374151;font-weight:500}
+.geo-row input[type=checkbox]{width:14px;height:14px;accent-color:#2563eb}
+
+/* ── STAT CARDS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px 18px}
+.stat-card .label{font-size:.68rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.stat-card .value{font-size:1.6rem;font-weight:700;color:#2563eb;line-height:1}
+.stat-card .sub{font-size:.7rem;color:#94a3b8;margin-top:4px}
+
+/* ── QUESTIONNAIRE ── */
+.q-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #f8fafc}
+.q-row:last-child{border:none}
+.q-label{flex:1;font-size:.82rem;color:#1e293b;line-height:1.45}
+.q-geo-note{font-size:.7rem;color:#2563eb;margin-top:2px;font-weight:500}
+.q-ctrl{flex:0 0 190px}
+.q-ctrl select{width:100%;padding:6px 9px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:.78rem;background:#fff;color:#111827;outline:none;font-family:inherit}
+.q-ctrl select:focus{border-color:#2563eb}
+.sect-hdr{background:#f8fafc;border-bottom:1px solid #e2e8f0;border-top:1px solid #e2e8f0;padding:7px 12px;font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin:0 -24px}
+
+/* ── CAT CARDS ── */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.cat-card{border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;text-align:center}
+.cat-card .clabel{font-size:.65rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.cat-card .cval{font-size:1.8rem;font-weight:800;line-height:1}
+.cat-card .cbar{height:5px;border-radius:3px;background:#f1f5f9;margin-top:10px;overflow:hidden}
+.cat-card .cbar-fill{height:100%;border-radius:3px;transition:width .5s}
+.catA{border-color:#fca5a5;background:#fff8f8}.catA .cval{color:#dc2626}
+.catB{border-color:#fcd34d;background:#fffcf0}.catB .cval{color:#d97706}
+.catC{border-color:#86efac;background:#f0fdf4}.catC .cval{color:#16a34a}
+.ifc-cat-box{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-top:12px;display:flex;align-items:center;gap:14px}
+.ifc-cat-box .ifc-val{font-size:1.8rem;font-weight:800;color:#1d4ed8;min-width:36px}
+.ifc-cat-box .ifc-desc{font-size:.8rem;color:#475569;line-height:1.5}
+.fi-flag{background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:10px 14px;font-size:.78rem;color:#9a3412;margin-top:12px;line-height:1.55}
+
+/* ── PIAL ── */
+.pial-body{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:18px 20px;font-size:.82rem;line-height:1.8;color:#1e293b}
+.pial-body strong{color:#111827}
+.pial-section{margin-bottom:14px}
+.pial-section-title{font-size:.7rem;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;border-bottom:1px solid #e2e8f0;padding-bottom:4px}
+
+/* ── ESAP ── */
+.esap-item{border:1px solid #e2e8f0;border-radius:9px;padding:12px 15px;margin-bottom:8px;background:#fff}
+.esap-item.mand{border-left:3px solid #dc2626;background:#fff8f8}
+.esap-item.pcfi{border-left:3px solid #d97706;background:#fffbf5}
+.esap-item.gap-e{border-left:3px solid #16a34a}
+.esap-item.gap-s{border-left:3px solid #2563eb}
+.esap-item.gap-g{border-left:3px solid #7c3aed}
+.esap-item .etitle{font-size:.84rem;font-weight:600;color:#111827;margin-bottom:4px}
+.esap-item .edesc{font-size:.77rem;color:#374151;line-height:1.55;margin-bottom:6px}
+.esap-item .emeta{display:flex;flex-wrap:wrap;gap:5px}
+.esap-item .esrc{font-size:.68rem;color:#94a3b8;margin-top:5px}
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:.67rem;font-weight:600;white-space:nowrap}
+.p-red{background:#fee2e2;color:#dc2626}
+.p-amber{background:#fef3c7;color:#d97706}
+.p-blue{background:#dbeafe;color:#1d4ed8}
+.p-green{background:#dcfce7;color:#16a34a}
+.p-purple{background:#ede9fe;color:#7c3aed}
+.p-gray{background:#f1f5f9;color:#475569}
+
+/* ── METRICS ── */
+.metric-item{border:1px solid #e2e8f0;border-radius:9px;padding:12px 15px;margin-bottom:8px;background:#fff}
+.metric-item .mname{font-size:.84rem;font-weight:600;color:#111827;margin-bottom:3px}
+.metric-item .mdesc{font-size:.77rem;color:#475569;line-height:1.5}
+.metric-item .mmeta{display:flex;gap:5px;margin-top:7px}
+
+/* ── UPLOAD ── */
+.upload-zone{border:2px dashed #cbd5e1;border-radius:10px;padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover,.upload-zone.drag{border-color:#2563eb;background:#eff6ff}
+.upload-zone .uicon{font-size:2.2rem;margin-bottom:8px}
+.upload-zone strong{font-size:.88rem;color:#1e293b;display:block}
+.upload-zone p{font-size:.78rem;color:#94a3b8;margin-top:4px}
+.upload-ok{margin-top:10px;font-size:.8rem;color:#16a34a;font-weight:500}
+
+/* ── MISC ── */
+.hidden{display:none}
+.info-box{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:10px 14px;font-size:.78rem;color:#1e40af;line-height:1.55;margin-bottom:14px}
+.warn-box{background:#fffbeb;border:1.5px solid #fde68a;border-radius:8px;padding:10px 14px;font-size:.78rem;color:#92400e;margin-bottom:14px}
+.section-div{font-size:.66rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid #f1f5f9}
+.actions-bar{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #f1f5f9}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.progress-wrap{margin:0 0 14px}
+.progress-label{display:flex;justify-content:space-between;font-size:.72rem;color:#64748b;margin-bottom:4px}
+.progress-bar{height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:#2563eb;transition:width .4s}
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ──────────────────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-star">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+      </div>
+      <span class="logo-text">BLUME</span>
+    </div>
+  </div>
+
+  <div class="sidebar-section">ESG Tool</div>
+  <div class="sidebar-item active step-item" id="nav0" onclick="goStep(0)">
+    <div class="step-num">1</div>Company details
+  </div>
+  <div class="sidebar-item step-item" id="nav1" onclick="goStep(1)">
+    <div class="step-num">2</div>Categorisation
+  </div>
+  <div class="sidebar-item step-item" id="nav2" onclick="goStep(2)">
+    <div class="step-num">3</div>PIAL rationale
+  </div>
+  <div class="sidebar-item step-item" id="nav3" onclick="goStep(3)">
+    <div class="step-num">4</div>LP ESAP
+  </div>
+  <div class="sidebar-item step-item" id="nav4" onclick="goStep(4)">
+    <div class="step-num">5</div>Questionnaire
+  </div>
+  <div class="sidebar-item step-item" id="nav5" onclick="goStep(5)">
+    <div class="step-num">6</div>Upload responses
+  </div>
+  <div class="sidebar-item step-item" id="nav6" onclick="goStep(6)">
+    <div class="step-num">7</div>Full ESAP + metrics
+  </div>
+
+  <div class="sidebar-section" style="margin-top:auto">Fund</div>
+  <div class="sidebar-item">
+    <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5z"/><path d="M2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2z"/></svg>
+    GIFT Fund V <span class="sidebar-badge">V</span>
+  </div>
+
+  <div class="sidebar-footer">Blume Ventures · ESG Tool v2</div>
+</aside>
+
+<!-- ── MAIN ─────────────────────────────────────────────────────────────────── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title"><strong id="topbar-company">New Assessment</strong> <span id="topbar-sector"></span></div>
+    <div class="topbar-actions">
+      <button class="btn btn-sm" onclick="exportAll()">↓ Export package</button>
+      <button class="btn btn-primary btn-sm" id="topbar-next" onclick="nextStep()">Next step →</button>
+    </div>
+  </div>
+  <div class="content">
+
+<!-- ── STEP 0: COMPANY ────────────────────────────────────────────────────── -->
+<div id="step0">
+  <div class="page-header">
+    <h1>Company details</h1>
+    <p>GIFT Fund V · ESG Assessment · Step 1 of 7</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Portfolio company information</div>
+    <div class="card-sub">The sector, description and geographies drive question selection, exclusion analysis, and ESAP population throughout all steps</div>
+    <div class="row2">
+      <div class="field"><label>Company name</label><input id="co-name" type="text" placeholder="e.g. Nivasa Finance Pvt Ltd" oninput="updateTopbar()"></div>
+      <div class="field"><label>Sector</label>
+        <select id="co-sector" onchange="updateTopbar()">
+          <option value="">— select sector —</option>
+          <option value="fintech">Fintech / Payments</option>
+          <option value="nbfc">NBFC / Lending / Credit</option>
+          <option value="insurtech">Insurtech</option>
+          <option value="wealthtech">Wealthtech / Investment platform</option>
+          <option value="saas">SaaS / B2B software</option>
+          <option value="ai">AI / ML</option>
+          <option value="consumer">Consumer internet</option>
+          <option value="healthtech">Healthtech / Medtech</option>
+          <option value="edtech">Edtech</option>
+          <option value="agritech">Agritech</option>
+          <option value="climate">Climate / Clean energy</option>
+          <option value="manufacturing">Manufacturing</option>
+          <option value="ecommerce">E-commerce / Retail</option>
+          <option value="media">Media / Entertainment</option>
+          <option value="deeptech">Deep tech / Hardware</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Company description <span style="color:#94a3b8;text-transform:none;font-weight:400">— paste from pitch deck or CRM</span></label>
+      <textarea id="co-desc" placeholder="Describe what the company does, who its customers are, whether it has a supply chain, hardware, gig workers, children users, and where it operates. More detail = better question selection across all steps."></textarea>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Investment date</label><input type="date" id="co-date"></div>
+      <div class="field"><label>No. of employees</label><input type="number" id="co-emp" placeholder="e.g. 24"></div>
+    </div>
+    <div class="field"><label>Operating geographies</label>
+      <div class="geo-row">
+        <label><input type="checkbox" id="geo-india" checked> India</label>
+        <label><input type="checkbox" id="geo-us"> United States</label>
+        <label><input type="checkbox" id="geo-uk"> United Kingdom</label>
+      </div>
+    </div>
+  </div>
+  <div class="actions-bar">
+    <span style="font-size:.75rem;color:#94a3b8">Step 1 of 7</span>
+    <button class="btn btn-primary" onclick="goStep(1)">Next: categorisation →</button>
+  </div>
+</div>
+
+<!-- ── STEP 1: CATEGORISATION ─────────────────────────────────────────────── -->
+<div id="step1" class="hidden">
+  <div class="page-header"><h1>E&S Categorisation</h1><p>GIFT Fund V · ADB SPS 2009 + IFC A/B/C · Step 2 of 7</p></div>
+  <div class="card">
+    <div class="card-title">ADB SPS 2009 — Environment</div>
+    <div class="card-sub">Score determines Category A / B / C for ADB environment safeguards</div>
+    <div id="env-qs"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ADB SPS 2009 — Involuntary resettlement (IR)</div>
+    <div class="card-sub">Score ≥25 = C · ≥20 = B · &lt;20 = A</div>
+    <div id="ir-qs"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">ADB SPS 2009 — Indigenous peoples (IP)</div>
+    <div class="card-sub">Score ≥30 = C · ≥20 = B · &lt;20 = A</div>
+    <div id="ip-qs"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">IFC A/B/C categorisation</div>
+    <div class="card-sub">Based on IFC Performance Standards — required for ESDD and Drawdown Notice</div>
+    <div id="ifc-qs"></div>
+  </div>
+  <div id="cat-result-card" class="card hidden">
+    <div class="card-title">Categorisation result</div>
+    <div class="card-sub">To be confirmed and documented in the ESDD report. Submitted to ADB ≥20 Business Days before Drawdown Notice.</div>
+    <div class="cat-grid">
+      <div class="cat-card" id="env-card"><div class="clabel">Environment (ADB)</div><div class="cval" id="env-val">–</div><div class="cbar"><div class="cbar-fill" id="env-bar" style="width:0%"></div></div></div>
+      <div class="cat-card" id="ir-card"><div class="clabel">Inv. Resettlement</div><div class="cval" id="ir-val">–</div><div class="cbar"><div class="cbar-fill" id="ir-bar" style="width:0%"></div></div></div>
+      <div class="cat-card" id="ip-card"><div class="clabel">Indigenous Peoples</div><div class="cval" id="ip-val">–</div><div class="cbar"><div class="cbar-fill" id="ip-bar" style="width:0%"></div></div></div>
+    </div>
+    <div class="ifc-cat-box">
+      <div class="ifc-val" id="ifc-val">–</div>
+      <div>
+        <div style="font-size:.68rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">IFC Category</div>
+        <div class="ifc-desc" id="ifc-desc">Complete the IFC questions above</div>
+      </div>
+    </div>
+    <div id="fi-flag" class="fi-flag hidden">⚡ <strong>Financial institution (PCFI) detected.</strong> Additional AML/KYC, AML Management System, Wolfsberg Questionnaire, and customer protection obligations apply under BII Schedule B Part E and IFC Exclusion List (FI addendum). These appear in the ESAP.</div>
+  </div>
+  <div class="actions-bar">
+    <button class="btn" onclick="goStep(0)">← Back</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-green btn-sm" onclick="exportCat()">↓ Export categorisation</button>
+      <button class="btn btn-primary" onclick="goStep(2)">Next: PIAL rationale →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 2: PIAL ───────────────────────────────────────────────────────── -->
+<div id="step2" class="hidden">
+  <div class="page-header"><h1>PIAL Rationale</h1><p>GIFT Fund V · Prohibited Investment Activities List · Step 3 of 7</p></div>
+  <div class="card">
+    <div class="card-title">Why this company is not on any exclusion list</div>
+    <div class="card-sub">Auto-generated paragraph covering IFC Exclusion List (Annexure I Schedule B), BII Additional Excluded Activities, and ADB Prohibited Activities</div>
+    <div class="pial-body" id="pial-body">Complete company details first.</div>
+  </div>
+  <div class="actions-bar">
+    <button class="btn" onclick="goStep(1)">← Back</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-green btn-sm" onclick="exportPIAL()">↓ Export PIAL (.txt)</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Next: LP ESAP →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 3: LP ESAP ────────────────────────────────────────────────────── -->
+<div id="step3" class="hidden">
+  <div class="page-header"><h1>LP ESAP — Mandatory actions</h1><p>GIFT Fund V · IFC / ADB / BII obligations · Step 4 of 7</p></div>
+  <div class="stat-grid" id="lp-stats"></div>
+  <div class="card">
+    <div class="card-title">Mandatory E&S and business integrity actions</div>
+    <div class="card-sub">Required by LP side letters regardless of company's current state. Source-tagged with timelines. PCFI items appear only for financial institution sectors.</div>
+    <div id="lp-esap-list"></div>
+  </div>
+  <div class="actions-bar">
+    <button class="btn" onclick="goStep(2)">← Back</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-green btn-sm" onclick="exportLPESAP()">↓ Export LP ESAP (.xlsx)</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Next: questionnaire →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 4: QUESTIONNAIRE ──────────────────────────────────────────────── -->
+<div id="step4" class="hidden">
+  <div class="page-header"><h1>ESG Assessment questionnaire</h1><p>GIFT Fund V · Auto-generated for portco · Step 5 of 7</p></div>
+  <div class="info-box" id="q-summary">Loading…</div>
+  <div class="card">
+    <div class="card-title">Question blocks included</div>
+    <div class="card-sub">Questions are selected based on sector, description, and geographies. Send the downloaded Excel to the portfolio company to complete.</div>
+    <div class="tag-row" id="q-blocks"></div>
+  </div>
+  <div class="actions-bar">
+    <button class="btn" onclick="goStep(3)">← Back</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-green" onclick="downloadQuestionnaire()">↓ Download questionnaire (.xlsx)</button>
+      <button class="btn btn-primary" onclick="goStep(5)">Portco filled it → Upload →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── STEP 5: UPLOAD ─────────────────────────────────────────────────────── -->
+<div id="step5" class="hidden">
+  <div class="page-header"><h1>Upload filled questionnaire</h1><p>GIFT Fund V · Parse responses · Step 6 of 7</p></div>
+  <div class="card">
+    <div class="card-title">Upload portco responses</div>
+    <div class="card-sub">Upload the completed Excel file. The tool reads column B (Responses) from Environment, Social, and Governance sheets to identify gaps.</div>
+    <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-in').click()">
+      <div class="uicon">📂</div>
+      <strong>Click to upload or drag & drop</strong>
+      <p>Accepts .xlsx files only · Column B must contain responses</p>
+    </div>
+    <input type="file" id="file-in" accept=".xlsx" class="hidden" onchange="handleFile(this.files[0])">
+    <div id="upload-ok" class="upload-ok hidden"></div>
+  </div>
+  <div class="actions-bar">
+    <button class="btn" onclick="goStep(4)">← Back</button>
+    <button class="btn btn-primary" id="parse-btn" onclick="parseAndBuild()" disabled>Generate full ESAP →</button>
+  </div>
+</div>
+
+<!-- ── STEP 6: FULL ESAP + METRICS ───────────────────────────────────────── -->
+<div id="step6" class="hidden">
+  <div class="page-header"><h1>Full ESAP + Annual metrics</h1><p>GIFT Fund V · Complete action plan · Step 7 of 7</p></div>
+  <div class="stat-grid" id="full-stats"></div>
+  <div class="card">
+    <div class="card-title">Environmental & Social Action Plan (ESAP)</div>
+    <div class="card-sub" id="esap-sub">LP mandatory + gap items from questionnaire responses</div>
+    <div id="full-esap-list"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Annual monitoring metrics</div>
+    <div class="card-sub">Universal metrics (all portcos) + sector-specific metrics per ADB DEMR and IFC AIMM indicators</div>
+    <div id="metrics-list"></div>
+  </div>
+  <div class="actions-bar">
+    <button class="btn" onclick="goStep(5)">← Back</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-green" onclick="exportFullESAP()">↓ Export full ESAP (.xlsx)</button>
+      <button class="btn btn-green" onclick="exportMetrics()">↓ Export metrics (.xlsx)</button>
+      <button class="btn btn-primary" onclick="exportAll()">↓ Export full package</button>
+    </div>
+  </div>
+</div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+// ─── STATE ────────────────────────────────────────────────────────────────────
+const S={company:"",sector:"",desc:"",geos:[],date:"",emp:"",catAnswers:{},responseFile:null,lpItems:[],gapItems:[],completedSteps:new Set()};
+const FI=new Set(["fintech","nbfc","insurtech","wealthtech"]);
+const SECTOR_NAMES={fintech:"Fintech / Payments",nbfc:"NBFC / Lending / Credit",insurtech:"Insurtech",wealthtech:"Wealthtech",saas:"SaaS / B2B software",ai:"AI / ML",consumer:"Consumer internet",healthtech:"Healthtech / Medtech",edtech:"Edtech",agritech:"Agritech",climate:"Climate / Clean energy",manufacturing:"Manufacturing",ecommerce:"E-commerce / Retail",media:"Media / Entertainment",deeptech:"Deep tech / Hardware",other:"Other"};
+const SECTOR_TAGS={fintech:["fintech","nbfc"],nbfc:["nbfc","fintech"],insurtech:["insurtech","fintech"],wealthtech:["wealthtech","fintech"],saas:["saas"],ai:["ai","saas"],consumer:["consumer","ecommerce"],healthtech:["healthtech","hardware"],edtech:["edtech","consumer"],agritech:["agritech"],climate:["climate","energy"],manufacturing:["manufacturing","hardware"],ecommerce:["ecommerce","consumer"],media:["media","consumer"],deeptech:["deeptech","hardware","manufacturing"],other:[]};
+
+function tags(){return new Set(SECTOR_TAGS[S.sector]||[]);}
+function isFI(){return FI.has(S.sector);}
+function geos(){return S.geos;}
+function inc(q){
+  const qt=q.tags||[];const qg=q.geo||[];
+  return (qt.includes("all")||qt.some(t=>tags().has(t)))&&(!qg.length||qg.some(g=>geos().includes(g)));
+}
+
+function readState(){
+  S.company=document.getElementById("co-name").value.trim()||"[Company]";
+  S.sector=document.getElementById("co-sector").value||"other";
+  S.desc=document.getElementById("co-desc").value.trim();
+  S.date=document.getElementById("co-date").value;
+  S.emp=document.getElementById("co-emp").value;
+  S.geos=[];
+  if(document.getElementById("geo-india").checked) S.geos.push("India");
+  if(document.getElementById("geo-us").checked) S.geos.push("US");
+  if(document.getElementById("geo-uk").checked) S.geos.push("UK");
+  if(!S.geos.length) S.geos=["India"];
+}
+
+function updateTopbar(){
+  readState();
+  document.getElementById("topbar-company").textContent=S.company||"New Assessment";
+  document.getElementById("topbar-sector").textContent=S.sector?`· ${SECTOR_NAMES[S.sector]||S.sector}`:"";
+}
+
+// ─── NAV ─────────────────────────────────────────────────────────────────────
+let currentStep=0;
+function goStep(n){
+  readState();
+  document.getElementById("step"+currentStep).classList.add("hidden");
+  document.getElementById("step"+n).classList.remove("hidden");
+  S.completedSteps.add(currentStep);
+  currentStep=n;
+  for(let i=0;i<7;i++){
+    const nav=document.getElementById("nav"+i);
+    nav.classList.remove("active","done");
+    if(i===n) nav.classList.add("active");
+    else if(S.completedSteps.has(i)) nav.classList.add("done");
+  }
+  if(n===1) buildCatQs();
+  if(n===2) buildPIAL();
+  if(n===3) buildLPESAP();
+  if(n===4) buildQPreview();
+  if(n===6) buildFullESAP();
+}
+function nextStep(){goStep(Math.min(currentStep+1,6));}
+
+// ─── CATEGORISATION ───────────────────────────────────────────────────────────
+const TL=["Yes","Will be developed in 3 months","Will be developed in 6 months","Will be developed in 1 year","No plans of developing"];
+const YN=["Yes","No"];const YNNA=["Yes","No","Not Applicable"];
+
+const ENV_QS=[
+  {q:"Does the company generate any toxic air emissions?",yes:1,no:5},{q:"Does the company generate any wastewater?",yes:1,no:5},
+  {q:"Does the company generate and segregate solid waste?",yes:5,no:1},{q:"Does the company generate any hazardous waste?",yes:1,no:5},
+  {q:"Does the company have mechanisms to monitor energy, water and raw material efficiency?",yes:5,no:1},
+  {q:"Does the Company have an Environment and Social Policy?",opts:TL,scores:[5,4,3,2,1]},
+  {q:"Does the firm have a designated ESG officer / responsible person?",opts:TL,scores:[5,4,3,2,1]},
+  {q:"Does the company monitor electricity consumption?",opts:TL,scores:[5,4,3,2,1]},
+  {q:"Does the firm measure its scope emissions (GHG)?",opts:TL,scores:[5,4,3,2,1]},
+  {q:"Does the company have a waste management policy or practice waste segregation?",opts:TL,scores:[5,4,3,2,1]},
+  {q:"Is the firm's operation in an ecologically sensitive zone?",yes:1,no:5},
+  {q:"Is the firm willing to update and send the ESG MIS every quarter?",yes:5,no:1}
+];
+const IR_QS=[
+  {q:"Will there be land acquisition?",yes:1,no:5},{q:"Is the ownership status and current usage of land to be acquired known?",opts:["Yes","There is no land acquisition"],scores:[1,5]},
+  {q:"Is there an existing Right of Way (ROW) to the company's office(s)?",yes:5,no:1},
+  {q:"Will the project require permanent/temporary involuntary land acquisition?",yes:1,no:5},
+  {q:"Will there be loss of crops, trees, or fixed assets due to land acquisition?",yes:1,no:5},
+  {q:"Will there be physical/economic displacement of any persons including informal settlers?",yes:1,no:5},
+  {q:"Will there be loss of income sources or livelihoods due to land acquisition?",yes:1,no:5}
+];
+const IP_QS=[
+  {q:"Are there socio-cultural groups in or near the project area who may be considered indigenous communities?",yes:1,no:5},
+  {q:"Are there national/local laws or studies that classify these groups as indigenous communities?",yes:1,no:5},
+  {q:"Do such groups self-identify as a distinct social and cultural group?",yes:1,no:5},
+  {q:"Will the project directly or indirectly benefit or target indigenous peoples?",yes:1,no:5},
+  {q:"Will the project affect indigenous peoples' traditional socio-cultural practices?",yes:1,no:5},
+  {q:"Will the project involve physical displacement from traditional/customary lands?",yes:1,no:5},
+  {q:"Did the firm's establishment involve acquisition of lands traditionally owned by indigenous peoples?",yes:1,no:5}
+];
+const IFC_QS=[
+  {q:"Does the company's activity involve significant adverse E&S impacts that are sensitive, diverse or unprecedented?"},
+  {q:"Does the company operate in sectors such as large-scale infrastructure, mining, heavy industry, or power generation?"},
+  {q:"Does the company have limited adverse E&S impacts that are readily mitigated (most tech/fintech/services companies)?"},
+  {q:"Does the company have minimal or no adverse E&S impacts (pure SaaS, fintech platform, pure services)?"}
+];
+
+function mkSelect(key,opts,onch){
+  let s=`<select onchange="${onch}" style="width:100%;padding:6px 9px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:.78rem;background:#fff;outline:none;font-family:inherit"><option value="">— select —</option>`;
+  opts.forEach((o,i)=>s+=`<option value="${i}">${o}</option>`);
+  return s+"</select>";
+}
+
+function buildQBlock(qs,containerId,prefix){
+  const c=document.getElementById(containerId);c.innerHTML="";
+  qs.forEach((q,i)=>{
+    const key=`${prefix}_${i}`;
+    let ctrl="";
+    if(q.opts) ctrl=mkSelect(key,q.opts,`S.catAnswers['${key}']=this.options[this.selectedIndex].text;calcCats()`);
+    else ctrl=mkSelect(key,YN,`S.catAnswers['${key}']=this.options[this.selectedIndex].text;calcCats()`);
+    c.innerHTML+=`<div class="q-row"><div class="q-label">${q.q}</div><div class="q-ctrl">${ctrl}</div></div>`;
+  });
+}
+
+function buildCatQs(){
+  buildQBlock(ENV_QS,"env-qs","env");
+  buildQBlock(IR_QS,"ir-qs","ir");
+  buildQBlock(IP_QS,"ip-qs","ip");
+  const c=document.getElementById("ifc-qs");c.innerHTML="";
+  IFC_QS.forEach((q,i)=>{
+    c.innerHTML+=`<div class="q-row"><div class="q-label">${q.q}</div><div class="q-ctrl">${mkSelect("ifc_"+i,YN,`S.catAnswers['ifc_${i}']=this.options[this.selectedIndex].text;calcCats()`)}</div></div>`;
+  });
+}
+
+function score(prefix,qs){
+  let s=0;
+  qs.forEach((q,i)=>{
+    const v=S.catAnswers[`${prefix}_${i}`];
+    if(!v) return;
+    if(q.opts){const idx=q.opts.indexOf(v);if(idx>=0&&q.scores) s+=q.scores[idx];}
+    else{s+=(v==="Yes"?q.yes:q.no);}
+  });
+  return s;
+}
+
+function catColor(c){return c==="A"?"#dc2626":c==="B"?"#d97706":"#16a34a";}
+function catClass(c){return c==="A"?"catA":c==="B"?"catB":"catC";}
+
+function calcCats(){
+  const envS=score("env",ENV_QS),irS=score("ir",IR_QS),ipS=score("ip",IP_QS);
+  function setCat(id,barId,cardId,s,threshC,threshB){
+    const cat=s>=threshC?"C":s>=threshB?"B":"A";
+    const max=threshC+10;const pct=Math.min(100,Math.round(s/max*100));
+    document.getElementById(id).textContent=cat;
+    document.getElementById(id).style.color=catColor(cat);
+    document.getElementById(barId).style.width=pct+"%";
+    document.getElementById(barId).style.background=catColor(cat);
+    const card=document.getElementById(cardId);
+    card.className="cat-card "+catClass(cat);
+    return cat;
+  }
+  if(envS>0){setCat("env-val","env-bar","env-card",envS,35,20);document.getElementById("cat-result-card").classList.remove("hidden");}
+  if(irS>0) setCat("ir-val","ir-bar","ir-card",irS,25,20);
+  if(ipS>0) setCat("ip-val","ip-bar","ip-card",ipS,30,20);
+  const a0=S.catAnswers["ifc_0"],a1=S.catAnswers["ifc_1"],a2=S.catAnswers["ifc_2"],a3=S.catAnswers["ifc_3"];
+  const ifcEl=document.getElementById("ifc-val"),ifcDesc=document.getElementById("ifc-desc");
+  if(a0==="Yes"||a1==="Yes"){ifcEl.textContent="A";ifcEl.style.color="#dc2626";ifcDesc.textContent="Significant adverse E&S impacts. Fund will not invest in Category A under current ESMS.";}
+  else if(a2==="Yes"){ifcEl.textContent="B";ifcEl.style.color="#d97706";ifcDesc.textContent="Limited E&S impacts, readily mitigated. Standard ESDD and ESAP required.";}
+  else if(a3==="Yes"){ifcEl.textContent="C";ifcEl.style.color="#16a34a";ifcDesc.textContent="Minimal or no adverse E&S impacts. Light-touch ESDD; standard policies still required.";}
+  document.getElementById("fi-flag").classList.toggle("hidden",!isFI());
+}
+
+// ─── PIAL ─────────────────────────────────────────────────────────────────────
+function buildPIAL(){
+  const n=S.company,sec=SECTOR_NAMES[S.sector]||S.sector,desc=S.desc||"[description not provided]",fi=isFI();
+  const d=desc.length>100?desc.substring(0,100)+"…":desc;
+  const isAI=S.sector==="ai"||S.sector==="saas";
+  document.getElementById("pial-body").innerHTML=`
+<div class="pial-section">
+  <div class="pial-section-title">IFC Exclusion List — Schedule B, Annexure I, Contribution Agreement</div>
+  The Fund's Exclusion List prohibits investment in: production or trade in products illegal under host country laws; weapons and munitions; alcoholic beverages (except beer and wine); tobacco; gambling and casinos; radioactive materials; unbonded asbestos fibres; and drift net fishing. <strong>${n}</strong>'s primary business activity — ${d} — does not involve any of the foregoing categories. The company is a lawfully registered entity engaged in <strong>${sec.toLowerCase()}</strong> activities, which are regulated, legal, and do not involve physical goods in any prohibited category.
+</div>
+<div class="pial-section">
+  <div class="pial-section-title">BII Additional Excluded Activities — Schedule B, BII Side Letter</div>
+  BII's additional exclusions cover: speculative/unregulated cryptocurrencies; AI that poses "unacceptable risk" as defined under the EU AI Act 2021; social media platforms targeting children or vulnerable people; dating apps; products primarily designed for national security/intelligence services with a risk of human rights abuse; animal and human cloning; prisons and detention centres. <strong>${n}</strong> does not operate in any of these categories. ${isAI?`The company's AI applications are commercial and do not fall within the definition of "unacceptable risk" under the EU AI Act 2021, as they are not used for social scoring, real-time biometric surveillance, or manipulation of human behaviour. The company's AI use-case will be confirmed and documented as part of the ESDD.`:`The company's business is entirely unrelated to these activity types.`}
+</div>
+<div class="pial-section">
+  <div class="pial-section-title">ADB Prohibited Activities — Appendix 4, ADB Side Letter (SPS 2009 Appendix 5)</div>
+  ADB prohibits investment in activities listed in Appendix 5 of its Safeguard Policy Statement (2009), including activities causing Category A impacts or activities inconsistent with ADB's Energy Policy (2021). Based on the categorisation completed, <strong>${n}</strong> does not involve any Category A environmental, involuntary resettlement, or indigenous peoples impacts.
+</div>
+${fi?`<div class="pial-section">
+  <div class="pial-section-title">Financial Intermediary Addendum — IFC Exclusion List (FI addendum)</div>
+  As <strong>${n}</strong> operates as a financial intermediary, the FI-specific addenda to the IFC Exclusion List apply. These require the FI to exclude from its own portfolio: harmful or exploitative forced labour or harmful child labour; commercial logging in primary tropical moist forest; and production or trade in forestry products not from sustainably managed forests. As a ${sec.toLowerCase()} focused on ${d}, the nature of its lending/investment activities does not extend to these sectors. This will be confirmed through the AML/KYC and Wolfsberg questionnaire process and documented in the ESDD. An AML Action Plan will be prepared as part of the ESAP.
+</div>`:""}
+<div class="pial-section">
+  <div class="pial-section-title">Conclusion</div>
+  Based on publicly available information and representations made at the time of investment, <strong>${n}</strong> does not engage in or facilitate any activity on the IFC Exclusion List, BII Additional Excluded Activities list, or ADB Prohibited Activities list. This assessment will be confirmed through full ESDD before the Drawdown Notice is issued to investors.
+</div>`;
+}
+
+// ─── LP ESAP ──────────────────────────────────────────────────────────────────
+const LP_MAND=[
+  {a:"Adopt Anti-Harassment Policy (IFC)",d:"Portfolio company must adopt the Fund's Anti-Harassment Policy (dated 7 August 2025) covering sexual harassment, gender-based violence, and workplace misconduct. No material amendments without IFC approval.",src:"IFC Side Letter — Annexure I §2.8",tl:"Within 6 months of investment date",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"Adopt Child Protection Policy (IFC)",d:"Portfolio company must adopt the Fund's Child Protection Policy covering prevention of sexual exploitation, abuse, and violence/maltreatment of children (under 18 years). No material amendments without IFC approval.",src:"IFC Side Letter — Annexure I §2.8",tl:"Within 6 months of investment date",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"Establish Grievance Mechanism (internal + external)",d:"Documented grievance mechanism covering all workers and third parties. Must allow anonymous reporting, protect against retaliation, treat complaints confidentially, and be overseen by a senior officer reporting to management.",src:"BII Side Letter — Schedule B Part D",tl:"Within 6 months of investment date",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"Establish Whistleblowing Mechanism",d:"Formal whistleblowing channel for reporting improper or illegal activities (Sanctionable Practices, Sanctions, financial crime). Same design standards as grievance mechanism.",src:"BII Side Letter — Schedule B Part D",tl:"Within 6 months of investment date",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"Adopt ABC Policy (Anti-Bribery and Corruption)",d:"Company must adopt and maintain an ABC policy. All key persons, directors, and officers must read, understand, and certify compliance. Confirmed in each Drawdown Notice.",src:"BII / IFC / ADB Side Letters",tl:"Pre-investment (condition to first drawdown)",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"ILO Core Labour Standards compliance",d:"Must comply with ILO fundamental standards: freedom of association (C87/C98); forced labour elimination (C29/C105); child labour abolition (C138/C182); non-discrimination (C100/C111); and ILO Convention 190 (gender-based violence).",src:"BII Side Letter — Schedule B Part D",tl:"Pre-investment / ongoing",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"E&S covenants in investment agreement",d:"Investment agreement must include: obligation to comply with E&S Policy; ESAP implementation by agreed dates; Fund's right to visit premises and access records; customary remedies for E&S breach.",src:"IFC / ADB / BII Side Letters",tl:"At time of investment / closing",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"ADB SPS categorisation documented",d:"Formal categorisation for Environment, Involuntary Resettlement, and Indigenous Peoples under ADB SPS 2009 must be documented and submitted to ADB ≥20 Business Days before the Drawdown Notice.",src:"ADB Side Letter — Appendix 4",tl:"≥20 Business Days before Drawdown Notice",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"IFC ESDD report and ESAP (first 3 investments)",d:"For the first three investments, the full ESDD report and proposed ESAP must be shared with IFC ≥10 Business Days before the Drawdown Notice, regardless of E&S category.",src:"IFC Side Letter — Annexure I §2.1(b)",tl:"≥10 Business Days before Drawdown Notice",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"Annual E&S Performance Report",d:"Submit E&S Performance Report to IFC within 90 days after each fiscal year-end. Covers ESMS implementation and E&S performance of all portfolio companies.",src:"IFC Side Letter — Annexure I §4.1(a)",tl:"Within 90 days of fiscal year-end (annual)",p:"Mandatory",cat:"LP Mandatory"},
+  {a:"Climate Finance Allocation — 5% commitment",d:"IFC requires the Fund to allocate at least 5% of investable funds to climate-eligible activities per Joint MDB Common Principles by end of Commitment Period. Track and report annually.",src:"IFC Side Letter §47(a)",tl:"By end of Commitment Period — track annually",p:"Mandatory",cat:"LP Mandatory"},
+];
+const LP_PCFI=[
+  {a:"AML/KYC Policy — adopt and implement (PCFI)",d:"As a financial institution, must adopt AML/KYC policies including: board-approved AML policy; customer due diligence (PEPs, UBOs); suspicious transaction monitoring; staff training; and regular board reporting.",src:"BII Schedule B Part E; IFC Exclusion List FI addendum",tl:"Within 6 months of investment (BII) / condition to investment (IFC)",p:"Mandatory — PCFI",cat:"LP Mandatory — PCFI"},
+  {a:"Appoint AML Coordinator (PCFI)",d:"Designate a senior operational officer as AML Coordinator responsible for implementing and maintaining the AML Management System. Fund must be notified within 30 days of any removal or replacement.",src:"BII Side Letter — Schedule B Part E",tl:"Within 6 months of investment date",p:"Mandatory — PCFI",cat:"LP Mandatory — PCFI"},
+  {a:"Wolfsberg AML Questionnaire (PCFI)",d:"Complete the Wolfsberg Group AML Questionnaire confirming: no regulatory non-compliance action; AML/CFT policy meets statutory requirements; independent compliance department with AML officer reporting to Board (not senior management).",src:"ADB Side Letter — Appendix 4",tl:"Pre-investment (ADB condition)",p:"Mandatory — PCFI",cat:"LP Mandatory — PCFI"},
+  {a:"Customer protection and fair practices code (PCFI)",d:"Must adhere to BII minimum customer protection standards: appropriate product design; prevention of over-indebtedness; pricing transparency; responsible pricing; zero tolerance for abusive collection practices.",src:"BII Side Letter — Schedule B Part E",tl:"Within 6 months of investment date",p:"Mandatory — PCFI",cat:"LP Mandatory — PCFI"},
+  {a:"FI Exclusion List compliance — no prohibited lending categories",d:"Must exclude from own portfolio: harmful forced/child labour; commercial logging in primary tropical moist forest; forestry products not from sustainably managed forests. Covenant in all post-investment loan documents.",src:"IFC Exclusion List — FI addendum",tl:"At time of investment / ongoing",p:"Mandatory — PCFI",cat:"LP Mandatory — PCFI"},
+];
+
+function pillForP(p){const m={"Mandatory":"p-red","Mandatory — PCFI":"p-amber","High":"p-blue","Medium":"p-green","Low":"p-gray","Critical — Healthtech":"p-red","Mandatory — India":"p-purple","Mandatory — US/UK":"p-blue"};return m[p]||"p-gray";}
+function catCls(cat){const m={"LP Mandatory":"mand","LP Mandatory — PCFI":"pcfi","Gap — Environment":"gap-e","Gap — Social":"gap-s","Gap — Governance":"gap-g"};return m[cat]||"";}
+
+function renderESAPItem(item,idx){
+  return `<div class="esap-item ${catCls(item.cat||item.category)}">
+    <div class="etitle">${idx+1}. ${item.a||item.action}</div>
+    <div class="edesc">${item.d||item.desc}</div>
+    <div class="emeta">
+      <span class="pill ${pillForP(item.p||item.priority)}">${item.p||item.priority}</span>
+      ${(item.tl||item.timeline)?`<span class="pill p-gray">${item.tl||item.timeline}</span>`:""}
+      ${item.response?`<span class="pill p-gray">Response: "${item.response}"</span>`:""}
+    </div>
+    <div class="esrc">Source: ${item.src||item.source}</div>
+  </div>`;
+}
+
+function buildLPESAP(){
+  const items=[...LP_MAND,...(isFI()?LP_PCFI:[])];
+  S.lpItems=items;
+  const el=document.getElementById("lp-esap-list");el.innerHTML="";
+  let lastCat="";
+  items.forEach((item,i)=>{
+    if(item.cat!==lastCat){el.innerHTML+=`<div class="section-div">${item.cat}</div>`;lastCat=item.cat;}
+    el.innerHTML+=renderESAPItem(item,i);
+  });
+  document.getElementById("lp-stats").innerHTML=`
+    <div class="stat-card"><div class="label">LP Mandatory</div><div class="value">${LP_MAND.length}</div><div class="sub">IFC / ADB / BII</div></div>
+    <div class="stat-card"><div class="label">PCFI items</div><div class="value">${isFI()?LP_PCFI.length:0}</div><div class="sub">${isFI()?"Financial institution":"Not applicable"}</div></div>
+    <div class="stat-card"><div class="label">Total actions</div><div class="value">${items.length}</div><div class="sub">Pre-questionnaire</div></div>
+    <div class="stat-card"><div class="label">IFC Climate</div><div class="value">5%</div><div class="sub">Allocation target</div></div>`;
+}
+
+// ─── QUESTIONNAIRE PREVIEW ────────────────────────────────────────────────────
+const ALL_QS_META=[
+  // Environment sections
+  {section:"IR Checks",tags:["all"]},{section:"IP Checks",tags:["all"]},
+  {section:"Resource Efficiency & Pollution Prevention",tags:["all"]},
+  {section:"Environment Policies & Roles",tags:["all"]},
+  {section:"Climate & Clean Energy",tags:["climate","energy"]},
+  {section:"Agriculture & Land Use",tags:["agritech"]},
+  {section:"Manufacturing & Supply Chain",tags:["manufacturing","hardware","deeptech"]},
+  // Social
+  {section:"Diversity, Equity & Inclusion",tags:["all"]},
+  {section:"Community Relations & Stakeholder Engagement",tags:["all"]},
+  {section:"Supply Chain & Vendor Management",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {section:"Data Privacy & Cyber Security",tags:["all"]},
+  {section:"Children's Data & Safeguarding",tags:["edtech","consumer","healthtech","media"]},
+  {section:"Healthcare & Patient Safety",tags:["healthtech"]},
+  {section:"AI Ethics & Responsible Technology",tags:["ai","saas","fintech","nbfc"]},
+  {section:"Financial Inclusion & Customer Protection",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {section:"Health, Safety & Accessibility",tags:["all"]},
+  {section:"Internal Grievance Redressal",tags:["all"]},
+  {section:"Employee Benefits & Well-Being",tags:["all"]},
+  {section:"Gig & Contract Workers",tags:["consumer","ecommerce","agritech","media"]},
+  // Governance
+  {section:"Corporate Governance Structure",tags:["all"]},
+  {section:"Policies & Compliance",tags:["all"]},
+  {section:"AML, KYC & Financial Integrity",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {section:"UK Regulatory Compliance",tags:["all"],geo:["UK"]},
+  {section:"US Regulatory Compliance",tags:["all"],geo:["US"]},
+  {section:"Supplier & Product Integrity",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+];
+
+function buildQPreview(){
+  const t=tags();const g=geos();
+  const included=ALL_QS_META.filter(m=>{
+    const tagOk=m.tags.includes("all")||m.tags.some(tag=>t.has(tag));
+    const geoOk=!m.geo||m.geo.some(geo=>g.includes(geo));
+    return tagOk&&geoOk;
+  });
+  document.getElementById("q-summary").innerHTML=
+    `Questionnaire for <strong>${S.company}</strong> · Sector: <strong>${SECTOR_NAMES[S.sector]||S.sector}</strong> · Geographies: <strong>${g.join(", ")}</strong> · <strong>${included.length} question blocks</strong> selected${isFI()?' · <span class="pill p-amber">PCFI — AML/KYC blocks included</span>':''}`;
+  const el=document.getElementById("q-blocks");el.innerHTML="";
+  included.forEach(m=>el.innerHTML+=`<span class="pill p-gray" style="margin-bottom:4px">${m.section}</span>`);
+}
+
+// ─── QUESTIONNAIRE XLSX DOWNLOAD ──────────────────────────────────────────────
+const TIMELINE_OPTS=["Yes","Will be developed in 3 months","Will be developed in 6 months","Will be developed in 1 year","No plans of developing"];
+const YN_OPTS=["Yes","No"];const YNNA_OPTS=["Yes","No","Not Applicable"];
+
+function buildSheetRows(qs){
+  const rows=[["Questions","Responses","Score"]];
+  qs.forEach(q=>{
+    if(!inc(q)) return;
+    if(q.section){rows.push([q.section,null,null]);return;}
+    if(q.geo&&q.geo.length) rows.push([`⚑ Applies to: ${q.geo.join(", ")} operations`,null,null]);
+    rows.push([q.q,null,null]);
+  });
+  return rows;
+}
+
+// Full question arrays for XLSX
+const ENV_XLSX=[
+  {section:"IR Checks",tags:["all"]},
+  {q:"Will there be land acquisition while setting up an office or facility?",tags:["all"]},
+  {q:"If yes — is the ownership status and current usage of the land to be acquired known?",tags:["all"]},
+  {q:"Is there an existing Right of Way (ROW) to the company's office(s)?",tags:["all"]},
+  {q:"Will the project require permanent and/or temporary involuntary land acquisition?",tags:["all"]},
+  {q:"Will there be loss of crops, trees, or fixed assets due to land acquisition?",tags:["all"]},
+  {q:"Will there be physical and/or economic displacement of any persons?",tags:["all"]},
+  {q:"Will there be loss of income sources or livelihoods due to land acquisition?",tags:["all"]},
+  {section:"IP Checks",tags:["all"]},
+  {q:"Are there socio-cultural groups in/near the project area who may be considered indigenous communities?",tags:["all"]},
+  {q:"Are there national/local laws or studies that classify these groups as indigenous communities?",tags:["all"]},
+  {q:"Do such groups self-identify as a distinct social and cultural group?",tags:["all"]},
+  {q:"Will the project directly/indirectly benefit or target indigenous peoples?",tags:["all"]},
+  {q:"Will the project affect indigenous peoples' traditional socio-cultural practices?",tags:["all"]},
+  {q:"Will the project involve physical displacement from traditional/customary lands?",tags:["all"]},
+  {q:"Did the firm's establishment involve acquisition of lands traditionally owned by indigenous peoples?",tags:["all"]},
+  {section:"Resource Efficiency and Pollution Prevention",tags:["all"]},
+  {q:"Does the company generate any toxic air emissions?",tags:["all"]},
+  {q:"Does the company generate any wastewater?",tags:["all"]},
+  {q:"Does the company generate any solid waste?",tags:["all"]},
+  {q:"Does the company generate any hazardous waste?",tags:["all"]},
+  {q:"Does the company generate e-waste (electronic/electrical equipment)?",tags:["all"]},
+  {q:"Does the company use hazardous chemicals, including pesticides?",tags:["manufacturing","agritech","hardware","deeptech"]},
+  {q:"Does the company generate significant noise and vibration?",tags:["manufacturing","hardware","deeptech"]},
+  {q:"Does the company affect water availability in the area of operations?",tags:["manufacturing","agritech"]},
+  {q:"Does the company have mechanisms to monitor energy, water, raw material efficiency?",tags:["all"]},
+  {q:"Do you encourage use of recycled or eco-certified materials in products or packaging?",tags:["manufacturing","hardware","ecommerce","deeptech"]},
+  {section:"Environment Policies, Roles and Responsibilities",tags:["all"]},
+  {q:"Does the Company have an Environment and Social (E&S) Policy?",tags:["all"]},
+  {q:"Does the company have a designated person responsible for ESG / E&S mitigation post investment?",tags:["all"]},
+  {q:"Does the company monitor its electricity consumption?",tags:["all"]},
+  {q:"Does the company measure its Scope 1 and Scope 2 GHG emissions?",tags:["all"]},
+  {q:"Does the company have a waste management policy or practice waste segregation?",tags:["all"]},
+  {q:"Is the company's operation in an ecologically sensitive zone?",tags:["all"]},
+  {q:"Is the company willing to update and send the ESG MIS every quarter?",tags:["all"]},
+  {section:"Climate and Clean Energy (Sector-Specific)",tags:["climate","energy"]},
+  {q:"Does the company track renewable energy generated or enabled (kWh/MW)?",tags:["climate","energy"]},
+  {q:"Does the company track GHG emissions avoided or reduced (tCO2e/year)?",tags:["climate","energy"]},
+  {section:"Agriculture and Land Use (Sector-Specific)",tags:["agritech"]},
+  {q:"Does the company track pesticide/agrochemical usage by type and volume?",tags:["agritech"]},
+  {q:"Does the company monitor land use change in its supply chain?",tags:["agritech"]},
+];
+const SOC_XLSX=[
+  {section:"Diversity, Equity and Inclusion",tags:["all"]},
+  {q:"Does the company adhere to anti-discrimination and equal opportunity practices?",tags:["all"]},
+  {q:"Does the company have a formal anti-discrimination and equal opportunity policy?",tags:["all"]},
+  {q:"If no — is the company willing to adopt anti-discrimination practices?",tags:["all"]},
+  {q:"Does the company provide equal opportunity in recruitment, promotion, and development?",tags:["all"]},
+  {q:"Does the company have a formal DEI (Diversity, Equity and Inclusion) policy?",tags:["all"]},
+  {q:"What is the current gender breakdown of the workforce? (M / F / Other — provide numbers)",tags:["all"]},
+  {q:"What percentage of senior management roles are held by women?",tags:["all"]},
+  {q:"What percentage of the Board comprises women?",tags:["all"]},
+  {section:"Community Relations and Stakeholder Engagement",tags:["all"]},
+  {q:"Does the company have a grievance mechanism for external stakeholders?",tags:["all"]},
+  {q:"Does the company have a GR mechanism/hotline with definitive timelines for grievance resolution?",tags:["all"]},
+  {q:"Does the company engage with local communities or indigenous peoples for outreach activities?",tags:["all"]},
+  {q:"Does the company work with external vendors / contract manufacturers?",tags:["all"]},
+  {q:"Does the company have signed agreements with all external vendors?",tags:["all"]},
+  {section:"Supply Chain and Vendor Management (Sector-Specific)",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {q:"Does the company have a diverse supplier base to mitigate supply chain risk?",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {q:"Does the company have a supplier code of conduct requiring statutory compliance?",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {q:"Do vendors/manufacturers have OHS policies and training programs in place?",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {q:"Do vendors have anti-child labour and anti-discrimination policies?",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {section:"Data Privacy and Cyber Security",tags:["all"]},
+  {q:"Does the company have a formal cyber security policy?",tags:["all"]},
+  {q:"Does the company have a Data Privacy Policy to protect customer data?",tags:["all"]},
+  {q:"What types of customer data does the company store? (Personal / Contact / Financial / Transaction / Children's)",tags:["all"]},
+  {q:"Which data protection laws apply? (DPDP Act 2023 / UK GDPR / CCPA / FTC Act — tick all applicable)",tags:["all"]},
+  {q:"Does the company share customer data with third parties or vendors?",tags:["all"]},
+  {q:"Does the company have a data retention and deletion policy?",tags:["all"]},
+  {q:"Are there automated processes for data deletion?",tags:["all"]},
+  {q:"Does the company provide a clear privacy notice to data subjects before collecting personal data?",tags:["all"]},
+  {q:"Is all personal data encrypted in transit and at rest?",tags:["all"]},
+  {q:"Are vendors and TPAs contractually required to maintain equivalent data protection standards?",tags:["all"]},
+  {q:"Is there a system to track consent withdrawal and ensure processing stops immediately?",tags:["all"]},
+  {q:"Is there a defined personal data breach response plan?",tags:["all"]},
+  {q:"Are third-party vendors assessed for data security risks?",tags:["all"]},
+  {section:"Children's Data and Safeguarding (Sector-Specific)",tags:["edtech","consumer","healthtech","media"]},
+  {q:"Does the company collect or process data from users under 18 years of age?",tags:["edtech","consumer","healthtech","media"]},
+  {q:"Does the company have a specific Child Data Protection policy?",tags:["edtech","consumer","healthtech","media"]},
+  {q:"Does the company have a Child Protection Policy (covering abuse, exploitation, safeguarding)?",tags:["edtech","consumer","healthtech","media"]},
+  {section:"Healthcare and Patient Safety (Sector-Specific)",tags:["healthtech"]},
+  {q:"Are the company's diagnostic or therapeutic tools clinically validated?",tags:["healthtech"]},
+  {q:"Are users informed that the tool does not replace professional medical advice?",tags:["healthtech"]},
+  {q:"Does the company collect mental health or sensitive diagnostic information from users?",tags:["healthtech"]},
+  {q:"Does the company have a protocol for escalation of high-risk users (e.g. suicidal ideation)?",tags:["healthtech"]},
+  {section:"AI Ethics and Responsible Technology (Sector-Specific)",tags:["ai","saas","fintech","nbfc"]},
+  {q:"Has the company conducted an AI risk assessment (e.g. EU AI Act risk classification)?",tags:["ai","saas","fintech","nbfc"]},
+  {q:"Does the company's AI system use automated decision-making that materially affects individuals?",tags:["ai","fintech","nbfc","saas"]},
+  {q:"Does the company have an AI ethics or responsible AI policy?",tags:["ai","saas"]},
+  {q:"Are AI model outputs audited for bias (gender, caste, race, socioeconomic status)?",tags:["ai","fintech","nbfc"]},
+  {section:"Financial Inclusion and Customer Protection (Sector-Specific)",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {q:"Does the company have a customer protection and fair practices code?",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {q:"Does the company have policies to prevent over-indebtedness of borrowers?",tags:["nbfc","fintech"]},
+  {q:"Does the company have transparent pricing and fee disclosure to customers?",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {q:"Does the company have a grievance mechanism for borrower/customer complaints per RBI guidelines?",tags:["fintech","nbfc"],geo:["India"]},
+  {q:"Does the company comply with FCA consumer duty requirements?",tags:["fintech","nbfc","insurtech","wealthtech"],geo:["UK"]},
+  {section:"Health, Safety and Accessibility",tags:["all"]},
+  {q:"Does the company have a Health and Safety policy and training programme?",tags:["all"]},
+  {q:"Does the property have accessibility amenities for differently-abled persons?",tags:["all"]},
+  {q:"Did any employees face work-related injuries in the last year?",tags:["all"]},
+  {q:"Does the facility have a first-aid kit on the premises?",tags:["all"]},
+  {section:"Internal Grievance Redressal",tags:["all"]},
+  {q:"Does the company have an internal grievance redressal (GR) mechanism for employees?",tags:["all"]},
+  {q:"Are the contact details of GR committee members made available to all employees?",tags:["all"]},
+  {section:"Employee Benefits and Well-Being",tags:["all"]},
+  {q:"Has the company issued appointment letters with transparent working terms to all employees?",tags:["all"]},
+  {q:"Does the company provide minimum wage to all employees per applicable law?",tags:["all"]},
+  {q:"Does the company have a leave policy (annual, sick, parental)?",tags:["all"]},
+  {q:"Are parental, sick and paid leaves granted to employees?",tags:["all"]},
+  {q:"Does the company provide employees with PF/ESI as applicable under Indian law?",tags:["all"],geo:["India"]},
+  {q:"Does the company comply with US payroll benefit requirements (Social Security, Medicare, health insurance)?",tags:["all"],geo:["US"]},
+  {q:"Does the company comply with UK statutory employee benefit requirements (pension auto-enrolment, SSP, parental leave)?",tags:["all"],geo:["UK"]},
+  {q:"Does the company provide health insurance to employees?",tags:["all"]},
+  {q:"Does the company provide employees with skill development and training?",tags:["all"]},
+  {q:"Are performance incentives, bonuses, or profit-sharing schemes available?",tags:["all"]},
+  {q:"Are employee welfare metrics reported to leadership or the Board?",tags:["all"]},
+  {q:"Does the company have a fixed salary payment date?",tags:["all"]},
+  {q:"How many employees are above the age of 40?",tags:["all"]},
+  {q:"Is the company planning to conduct free annual health check-ups per applicable labour law?",tags:["all"]},
+  {section:"Gig and Contract Workers (Sector-Specific)",tags:["consumer","ecommerce","agritech","media"]},
+  {q:"Does the company have gig workers or contractual field staff?",tags:["consumer","ecommerce","agritech","media"]},
+  {q:"Does the company extend insurance coverage and safety training to gig workers?",tags:["consumer","ecommerce","agritech","media"]},
+];
+const GOV_XLSX=[
+  {section:"Corporate Governance Structure",tags:["all"]},
+  {q:"Does the company have a Board of Directors?",tags:["all"]},
+  {q:"If no — does the company plan to constitute a Board with independent directors as it scales?",tags:["all"]},
+  {q:"How many Board members are there?",tags:["all"]},
+  {q:"Does the Board have oversight on ESG issues?",tags:["all"]},
+  {q:"Has the Board conducted at least one meeting per quarter since inception?",tags:["all"]},
+  {q:"Does the company have women on the Board?",tags:["all"]},
+  {q:"If yes — what percentage of the Board comprises women?",tags:["all"]},
+  {q:"Does the company have women in senior management?",tags:["all"]},
+  {q:"If yes — what percentage of senior management comprises women?",tags:["all"]},
+  {q:"Is the ownership structure simple and transparent?",tags:["all"]},
+  {q:"Can the company clearly explain the source of funds for existing investors?",tags:["all"]},
+  {section:"Policies and Compliance",tags:["all"]},
+  {q:"Does the company have a Code of Conduct?",tags:["all"]},
+  {q:"Does the company have an Anti-Bribery and Corruption (ABC) policy?",tags:["all"]},
+  {q:"Does the company have an Anti-Money Laundering (AML) policy?",tags:["all"]},
+  {q:"Does the company have a whistleblower policy and reporting hotline?",tags:["all"]},
+  {q:"Does the company have an Equal Opportunity Policy?",tags:["all"]},
+  {q:"Does the company have a POSH (Prevention of Sexual Harassment) policy?",tags:["all"],geo:["India"]},
+  {q:"Has the company constituted an Internal Complaints Committee (ICC) as part of its POSH policy?",tags:["all"],geo:["India"]},
+  {q:"Does the company have a formal sexual harassment / anti-harassment policy equivalent to POSH?",tags:["all"],geo:["US","UK"]},
+  {q:"Does the company have a risk management policy?",tags:["all"]},
+  {q:"Is the company registered under the Shops and Establishment Act?",tags:["all"],geo:["India"]},
+  {q:"Does the company have a rental/lease agreement for its office space?",tags:["all"]},
+  {q:"Have there been any regulatory notices, warnings, or penalties received?",tags:["all"]},
+  {q:"Does the company maintain basic financial records (bank statements, invoices, contracts)?",tags:["all"]},
+  {q:"Has the company experienced any internal fraud, theft, or misuse of funds?",tags:["all"]},
+  {q:"Does the company have an internal audit system?",tags:["all"]},
+  {q:"Are gifts, hospitality, or commissions used in sales or partnerships?",tags:["all"]},
+  {section:"AML, KYC and Financial Integrity (Sector-Specific)",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {q:"Does the company conduct KYC checks for all investors and customers?",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {q:"Does the company have a dedicated AML compliance officer?",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {q:"Does the company have a Suspicious Transaction Reporting (STR) mechanism?",tags:["fintech","nbfc","insurtech","wealthtech"]},
+  {q:"Is the company compliant with FCA AML/KYC requirements?",tags:["fintech","nbfc","insurtech","wealthtech"],geo:["UK"]},
+  {q:"Is the company compliant with FinCEN/BSA AML requirements?",tags:["fintech","nbfc","insurtech","wealthtech"],geo:["US"]},
+  {section:"UK Regulatory Compliance (Sector-Specific)",tags:["all"],geo:["UK"]},
+  {q:"Does the company comply with the UK Modern Slavery Act?",tags:["all"],geo:["UK"]},
+  {q:"Does the company comply with UK GDPR and have a registered DPO if required?",tags:["all"],geo:["UK"]},
+  {q:"Is the company registered with the ICO (Information Commissioner's Office)?",tags:["all"],geo:["UK"]},
+  {section:"US Regulatory Compliance (Sector-Specific)",tags:["all"],geo:["US"]},
+  {q:"Does the company comply with applicable US state employment laws (WARN Act, OSHA, FLSA)?",tags:["all"],geo:["US"]},
+  {q:"Does the company have a documented CCPA / state data privacy compliance programme?",tags:["saas","consumer","ai","fintech","healthtech","edtech","media"],geo:["US"]},
+  {section:"Supplier and Product Integrity (Sector-Specific)",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {q:"Does the company have a supplier code of conduct requiring statutory compliance from all suppliers?",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {q:"Do suppliers adhere to labour standards, environmental certifications, and safe chemical use?",tags:["manufacturing","ecommerce","hardware","deeptech"]},
+  {q:"Has the company had any product recalls, complaints, or safety incidents?",tags:["manufacturing","hardware","deeptech","healthtech"]},
+];
+
+function downloadQuestionnaire(){
+  const giRows=[["Name of the Company",S.company],["Company Description",S.desc],["Sector",SECTOR_NAMES[S.sector]||S.sector],["Operating Geographies",S.geos.join(", ")],["Is this sector on the Blume Exclusion List?","No"],["Registered Address",null],["Size of the organization",S.emp||null],["No. of Permanent employees",null],["No. of Contractual employees",null],["No. of Part-time employees",null],["No. of Founders (Male / Female)",null],["Inception Date of the Company",S.date||null],["General Instructions",null],["Please answer all questions. Do not leave any question blank.",null],["For policies/documents — attach a copy or share the link where it is stored.",null],["If something is not applicable, write NA and briefly explain why.",null],["Information will be kept confidential — used only for ESG assessment.",null]];
+  const assessRows=[[null,null,"Score","Categorisation"],[null,"IR Categorisation",null,null],[null,"IP Categorisation",null,null],[null,"Company ESG Score",null,null],[null,"Overall Risk Category",null,null]];
+  const wb=XLSX.utils.book_new();
+  const wscols=[{wch:68},{wch:38},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(giRows),"General Information");
+  const envWS=XLSX.utils.aoa_to_sheet(buildSheetRows(ENV_XLSX));envWS["!cols"]=wscols;XLSX.utils.book_append_sheet(wb,envWS,"Environment");
+  const socWS=XLSX.utils.aoa_to_sheet(buildSheetRows(SOC_XLSX));socWS["!cols"]=wscols;XLSX.utils.book_append_sheet(wb,socWS,"Social");
+  const govWS=XLSX.utils.aoa_to_sheet(buildSheetRows(GOV_XLSX));govWS["!cols"]=wscols;XLSX.utils.book_append_sheet(wb,govWS,"Governance");
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(assessRows),"Assessment");
+  XLSX.writeFile(wb,`${S.company.replace(/\s+/g,"_")}_ESG_Questionnaire.xlsx`);
+}
+
+// ─── FILE UPLOAD & PARSE ──────────────────────────────────────────────────────
+const dropZone=document.getElementById("drop-zone");
+dropZone.addEventListener("dragover",e=>{e.preventDefault();dropZone.classList.add("drag");});
+dropZone.addEventListener("dragleave",()=>dropZone.classList.remove("drag"));
+dropZone.addEventListener("drop",e=>{e.preventDefault();dropZone.classList.remove("drag");handleFile(e.dataTransfer.files[0]);});
+
+function handleFile(file){
+  if(!file||!file.name.endsWith(".xlsx")){return;}
+  S.responseFile=file;
+  document.getElementById("upload-ok").textContent=`✓ ${file.name} loaded (${Math.round(file.size/1024)} KB) — ready to generate ESAP`;
+  document.getElementById("upload-ok").classList.remove("hidden");
+  document.getElementById("parse-btn").disabled=false;
+}
+
+const GAP_RESPS=new Set(["No","No plans of developing","Will be developed in 1 year","Will be developed in 6 months","Will be developed in 3 months"]);
+const GAP_MAP={
+  "Does the Company have an Environment and Social (E&S) Policy?":{a:"Develop E&S Policy",d:"Develop and adopt a formal E&S Policy consistent with IFC Performance Standards, covering E&S objectives, Exclusion List compliance, and risk management procedures.",src:"IFC Annexure I §2.1(a); BII Schedule B Part D",p:"High",cat:"Gap — Environment"},
+  "Does the company have a designated person responsible for ESG / E&S mitigation post investment?":{a:"Designate ESMS Officer / ESG focal point",d:"Appoint a designated person responsible for E&S mitigation, ESMS implementation, and quarterly ESG MIS reporting to the Fund.",src:"IFC Annexure I §2.3",p:"High",cat:"Gap — Environment"},
+  "Does the company measure its Scope 1 and Scope 2 GHG emissions?":{a:"Establish GHG emissions tracking (Scope 1 & 2)",d:"Implement a system to measure and report Scope 1 and 2 GHG emissions annually per BII ESG MIS requirements and IFC climate finance tracking.",src:"BII ESG MIS; IFC Climate Finance",p:"Medium",cat:"Gap — Environment"},
+  "Does the company have a waste management policy or practice waste segregation?":{a:"Develop waste management policy",d:"Adopt a waste management policy covering solid waste segregation, hazardous waste disposal, and e-waste per E-Waste Management Rules 2022 (India).",src:"IFC PS 3",p:"Medium",cat:"Gap — Environment"},
+  "Does the company have a formal anti-discrimination and equal opportunity policy?":{a:"Adopt anti-discrimination and equal opportunity policy",d:"Develop a formal anti-discrimination policy covering recruitment, promotion, pay, and development per ILO Conventions 100 and 111.",src:"BII Schedule B Part D — ILO C100/C111",p:"High",cat:"Gap — Social"},
+  "Does the company have a formal DEI (Diversity, Equity and Inclusion) policy?":{a:"Develop DEI Policy",d:"Develop a DEI policy covering gender, caste, disability, religion, and age. Supports ADB 2X gender lens alignment.",src:"BII Schedule B; ADB 2X Gender Lens",p:"Medium",cat:"Gap — Social"},
+  "Does the company have a formal cyber security policy?":{a:"Develop Cyber Security Policy",d:"Develop a formal cyber security policy covering: access controls; encryption; incident response; vulnerability management; and third-party vendor security requirements.",src:"BII Business Integrity; India DPDP Act 2023; UK GDPR",p:"High",cat:"Gap — Social"},
+  "Does the company have a Data Privacy Policy to protect customer data?":{a:"Develop Data Privacy Policy",d:"Develop a Data Privacy Policy compliant with applicable laws (DPDP Act 2023 / UK GDPR / CCPA as applicable).",src:"India DPDP Act 2023; UK GDPR; CCPA; BII Business Integrity",p:"High",cat:"Gap — Social"},
+  "Does the company have a data retention and deletion policy?":{a:"Develop data retention and deletion policy",d:"Develop a policy specifying retention periods, automated deletion processes, and documented justification per DPDP Act 2023 / UK GDPR Article 5(e).",src:"India DPDP Act 2023; UK GDPR Article 5(e)",p:"High",cat:"Gap — Social"},
+  "Is there a defined personal data breach response plan?":{a:"Develop personal data breach response plan",d:"Develop a breach response plan covering detection, internal notification, regulatory notification (CERT-In 6 hours; ICO 72 hours for UK), and customer notification.",src:"India CERT-In Directions 2022; UK GDPR Article 33",p:"High",cat:"Gap — Social"},
+  "Does the company have a Health and Safety policy and training programme?":{a:"Develop Health and Safety policy and training",d:"Develop an OHS policy and training programme covering workplace safety, first aid, emergency procedures, and incident reporting per ILO C155.",src:"BII Schedule B Part D — ILO C155; India OHS Code 2020",p:"High",cat:"Gap — Social"},
+  "Does the company provide employees with PF/ESI as applicable under Indian law?":{a:"Register and comply with PF/ESI obligations",d:"Ensure registration and compliance with EPF and ESI as applicable under Indian labour law thresholds.",src:"India EPF & MP Act 1952; ESI Act 1948",p:"High",cat:"Gap — Social"},
+  "Does the company comply with US payroll benefit requirements (Social Security, Medicare, health insurance)?":{a:"Comply with US payroll and benefits obligations",d:"Ensure compliance with US federal payroll obligations: Social Security (FICA); Medicare; and applicable ACA requirements.",src:"US FICA; ACA; BII Schedule B Part D",p:"High",cat:"Gap — Social"},
+  "Does the company comply with UK statutory employee benefit requirements (pension auto-enrolment, SSP, parental leave)?":{a:"Comply with UK statutory employment obligations",d:"Ensure compliance with UK statutory requirements: pension auto-enrolment; statutory sick pay; statutory maternity/paternity/shared parental leave.",src:"UK Employment Rights Act 1996; Pensions Act 2008",p:"High",cat:"Gap — Social"},
+  "Does the company have a POSH (Prevention of Sexual Harassment) policy?":{a:"Adopt POSH Policy and constitute ICC",d:"Adopt a POSH-compliant policy per the Sexual Harassment of Women at Workplace Act 2013. Constitute ICC with minimum 4 members (50%+ women, 1 external). Annual awareness training required.",src:"India POSH Act 2013; BII Anti-Harassment obligation",p:"Mandatory — India",cat:"Gap — Governance"},
+  "Has the company constituted an Internal Complaints Committee (ICC) as part of its POSH policy?":{a:"Constitute Internal Complaints Committee (ICC)",d:"Constitute ICC with minimum 4 members including at least 50% women and one external member. Notify all employees.",src:"India POSH Act 2013 Section 4",p:"Mandatory — India",cat:"Gap — Governance"},
+  "Does the company have a formal sexual harassment / anti-harassment policy equivalent to POSH?":{a:"Adopt anti-harassment policy (US/UK equivalent)",d:"Adopt a formal anti-harassment policy compliant with UK Equality Act 2010 or applicable US state law. Include reporting procedures and non-retaliation protections.",src:"UK Equality Act 2010; US Title VII; BII Anti-Harassment",p:"Mandatory — US/UK",cat:"Gap — Governance"},
+  "Does the company have an internal grievance redressal (GR) mechanism for employees?":{a:"Establish internal employee grievance mechanism",d:"Establish a formal internal grievance mechanism covering all employees with anonymous reporting, retaliation protection, and senior management oversight.",src:"BII Schedule B Part D; India Industrial Disputes Act 1947",p:"High",cat:"Gap — Social"},
+  "Does the company have a grievance mechanism for external stakeholders?":{a:"Establish external grievance mechanism",d:"Establish an external grievance mechanism with definitive timelines, accessible to customers, vendors, and communities per BII and IFC PS 1 requirements.",src:"BII Schedule B Part D; IFC PS 1",p:"High",cat:"Gap — Social"},
+  "Does the company have a Code of Conduct?":{a:"Develop Code of Conduct",d:"Develop a Code of Conduct covering conflict of interest, gifts and hospitality, anti-bribery, data handling, and employee conduct standards.",src:"BII Business Integrity; IFC Integrity provisions",p:"High",cat:"Gap — Governance"},
+  "Does the company have an Anti-Bribery and Corruption (ABC) policy?":{a:"Adopt ABC Policy",d:"Adopt and implement an ABC policy. All directors, officers, and key persons must read, understand, and certify compliance. LP-mandatory — confirmed in each Drawdown Notice.",src:"BII / IFC / ADB Side Letters",p:"Mandatory",cat:"Gap — Governance"},
+  "Does the company have an Anti-Money Laundering (AML) policy?":{a:"Adopt AML Policy",d:"Develop and implement an AML policy with CDD procedures, PEP screening, suspicious transaction monitoring, and staff training per India PMLA 2002 and applicable law.",src:"BII Schedule B; IFC Integrity §3.1(a); India PMLA 2002",p:"High",cat:"Gap — Governance"},
+  "Does the company have a whistleblower policy and reporting hotline?":{a:"Develop whistleblower policy and hotline",d:"Implement a whistleblower policy with a confidential reporting hotline, non-retaliation protections, and Board-level oversight. LP-mandatory.",src:"BII Schedule B Part D — Whistleblowing Mechanism",p:"Mandatory",cat:"Gap — Governance"},
+  "Does the company have a risk management policy?":{a:"Develop risk management policy",d:"Develop a risk management policy covering financial, operational, regulatory, ESG, and reputational risks with annual Board review.",src:"BII Business Integrity requirements; Companies Act 2013",p:"Medium",cat:"Gap — Governance"},
+  "Does the company have an Equal Opportunity Policy?":{a:"Adopt Equal Opportunity Policy",d:"Adopt and communicate a formal Equal Opportunity Policy covering all protected characteristics under applicable law.",src:"BII Schedule B Part D; ILO C100/C111",p:"High",cat:"Gap — Governance"},
+  "Does the company have a supplier code of conduct requiring statutory compliance?":{a:"Develop Supplier Code of Conduct",d:"Develop and enforce a Supplier Code of Conduct covering labour standards, environmental compliance, anti-corruption, and child/forced labour prohibition.",src:"IFC PS 2 (Labour — supply chain); BII Schedule B Part D",p:"High",cat:"Gap — Governance"},
+  "Does the company have a customer protection and fair practices code?":{a:"Adopt Customer Protection and Fair Practices Code",d:"Adopt a Fair Practices Code per RBI guidelines (for NBFCs) or equivalent covering transparent pricing, grievance redressal, non-coercive recovery, and responsible lending.",src:"BII Schedule B Part E; RBI Fair Practices Code",p:"High",cat:"Gap — Social"},
+  "Does the company have policies to prevent over-indebtedness of borrowers?":{a:"Develop over-indebtedness prevention policy",d:"Implement policies and underwriting procedures to assess and prevent over-indebtedness including credit bureau checks and debt-to-income limits.",src:"BII Schedule B Part E; SASB FN-CF-270a",p:"High",cat:"Gap — Social"},
+  "Has the company conducted an AI risk assessment (e.g. EU AI Act risk classification)?":{a:"Conduct AI risk assessment and classification",d:"Conduct an AI risk assessment covering EU AI Act classification. Document that systems do not fall into 'unacceptable risk' category. Required by BII Additional Excluded Activities.",src:"BII Additional Excluded Activities — EU AI Act 2021; SASB TC-SI",p:"High",cat:"Gap — Social"},
+  "Does the company have an AI ethics or responsible AI policy?":{a:"Develop AI Ethics / Responsible AI Policy",d:"Develop an AI ethics policy covering bias and fairness, transparency, human oversight, data governance, and prohibited use cases.",src:"BII Additional Excluded Activities; SASB TC-SI-220a",p:"High",cat:"Gap — Social"},
+  "Does the company have a protocol for escalation of high-risk users (e.g. suicidal ideation)?":{a:"Develop high-risk user escalation protocol",d:"Develop a documented protocol for identifying and escalating high-risk users including referral pathways to clinical professionals.",src:"IFC PS 4; SASB HC-DT-220a; India Mental Healthcare Act 2017",p:"Critical — Healthtech",cat:"Gap — Social"},
+  "Does the company comply with the UK Modern Slavery Act?":{a:"UK Modern Slavery Act compliance assessment",d:"Assess whether UK Modern Slavery Act 2015 applies (mandatory for turnover >£36m). If applicable, publish annual Modern Slavery Statement.",src:"UK Modern Slavery Act 2015; BII Schedule B Part D",p:"High",cat:"Gap — Governance"},
+  "Does the company comply with UK GDPR and have a registered DPO if required?":{a:"UK GDPR compliance and DPO appointment",d:"Ensure UK GDPR compliance: lawful basis documentation; data subject rights procedures; DPIA for high-risk processing; DPO appointment if required.",src:"UK GDPR; UK Data Protection Act 2018",p:"High",cat:"Gap — Governance"},
+};
+
+function parseAndBuild(){
+  if(!S.responseFile) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const wb=XLSX.read(e.target.result,{type:"array"});
+    const gaps=[];
+    ["Environment","Social","Governance"].forEach(sh=>{
+      const ws=wb.Sheets[sh];if(!ws) return;
+      const data=XLSX.utils.sheet_to_json(ws,{header:1,defval:null});
+      data.slice(1).forEach(row=>{
+        const q=row[0]?String(row[0]).trim():null;
+        const resp=row[1]?String(row[1]).trim():null;
+        if(!q||!resp||!GAP_RESPS.has(resp)||!GAP_MAP[q]) return;
+        const tmap={"Will be developed in 3 months":"Within 3 months","Will be developed in 6 months":"Within 6 months","Will be developed in 1 year":"Within 12 months","No plans of developing":"Immediate — requires action plan","No":"Within 6 months"};
+        gaps.push({...GAP_MAP[q],tl:tmap[resp]||"To be agreed",response:resp});
+      });
+    });
+    // Deduplicate against LP mandatory
+    const lpActions=new Set([...S.lpItems.map(i=>i.a)]);
+    S.gapItems=gaps.filter(g=>!lpActions.has(g.a));
+    goStep(6);
+  };
+  reader.readAsArrayBuffer(S.responseFile);
+}
+
+// ─── METRICS ─────────────────────────────────────────────────────────────────
+const UNIVERSAL_METRICS=[
+  {n:"Total employees — full-time equivalents",d:"Sex-disaggregated (male / female / other). ADB DEMR table 3 and IFC AIMM indicator. Track at baseline and annually."},
+  {n:"% women in senior management",d:"Required IFC AIMM reporting indicator. Target: track yearly."},
+  {n:"Annual revenue (INR and USD)",d:"ADB DEMR table 1 — track from baseline year through exit."},
+  {n:"Number of customers (annual)",d:"Sex-disaggregated where possible. ADB DEMR table 2."},
+  {n:"Anti-Harassment Policy compliance status",d:"Annual confirmation that the policy is in place, communicated, and no material amendments made without IFC approval. Report any SEA Incident within 3 days."},
+  {n:"Child Protection Policy compliance status",d:"Annual confirmation. Any Child Protection Incident must be reported to IFC within 3 days of occurrence."},
+  {n:"Grievance Mechanism — cases received and resolved",d:"Total grievances, whistleblowing reports, and complaints received, eligible, and resolved in the period. Required by BII annual reporting."},
+  {n:"Serious E&S incidents",d:"Number and description of any material adverse E&S incidents. Must be notified to IFC within 7 working days of occurrence."},
+  {n:"ADB Safeguards compliance status",d:"Annual confirmation of continued compliance with ADB SPS category and no material change affecting categorisation."},
+  {n:"Taxes paid to government (USD)",d:"IFC AIMM indicator — track annually."},
+  {n:"2X gender-lens alignment status",d:"ADB requires Fund to achieve 2X alignment by 2028. Track at origination and exit."},
+];
+const SECTOR_METRICS={
+  fintech:[{n:"Number of unique customers",d:"Sex-disaggregated. ADB DEMR."},{n:"% female customers",d:"ADB 2X and BII gender metrics."},{n:"Complaints received and resolved",d:"BII Schedule B Part E customer protection obligations."}],
+  nbfc:[{n:"Number of unique borrowers",d:"Sex-disaggregated. ADB DEMR."},{n:"Loan portfolio at risk (PAR >30 and >90 days)",d:"BII customer protection / over-indebtedness indicator."},{n:"% female borrowers",d:"ADB 2X gender alignment."},{n:"Average cost of borrowing to end customer (%)",d:"BII Schedule B Part E — responsible pricing."},{n:"Number of AML suspicious transaction reports filed",d:"AML Management System effectiveness."}],
+  healthtech:[{n:"Number of patients / users served",d:"Sex and age disaggregated. ADB DEMR."},{n:"% female beneficiaries",d:"ADB 2X and BII gender metrics."},{n:"Medical device adverse events or safety complaints",d:"IFC PS 4 community health and safety."},{n:"Data privacy incidents",d:"BII Business Integrity; India DPDP Act 2023."}],
+  edtech:[{n:"Number of learners enrolled",d:"Sex and age disaggregated. ADB DEMR."},{n:"Course completion rate (%)",d:"Development effectiveness indicator."},{n:"% female learners",d:"ADB 2X gender alignment."},{n:"Data privacy incidents involving minors",d:"BII Safeguarding Violation prevention; IFC Child Protection Policy."}],
+  agritech:[{n:"Number of farmers / agricultural SMEs reached",d:"Sex-disaggregated. ADB DEMR."},{n:"% female farmers reached",d:"ADB 2X gender alignment."},{n:"Crop yield improvement (%)",d:"Development impact metric per ADB DEMR."},{n:"Pesticide / agrochemical usage tracked",d:"IFC Exclusion List; PS 3 resource efficiency."}],
+  climate:[{n:"Volume of climate finance enabled (USD, annual)",d:"Required by IFC 5% Climate Finance Allocation Commitment — Joint MDB Common Principles."},{n:"GHG emissions avoided or reduced (tCO2e/year)",d:"Climate mitigation impact per IFC Joint MDB Common Principles."},{n:"Number of beneficiaries accessing clean energy solution",d:"Sex-disaggregated. ADB DEMR."},{n:"Renewable energy capacity deployed (MW or kWh)",d:"IFC Climate Finance Tracking."}],
+  manufacturing:[{n:"Hazardous waste generated and disposed (tonnes)",d:"IFC PS 3 and applicable environmental laws."},{n:"Energy consumption (kWh/unit of output)",d:"IFC PS 3 and Scope 1/2 GHG reporting."},{n:"Number of OHS incidents (LTI rate)",d:"IFC PS 2 and applicable Indian OHS laws."}],
+  ai:[{n:"AI model risk level (EU AI Act classification)",d:"BII Additional Excluded Activities — annual documentation required."},{n:"Data privacy incidents involving AI systems",d:"BII Business Integrity; India DPDP Act 2023."}],
+  saas:[{n:"Data privacy incidents and breaches",d:"BII Business Integrity; India DPDP Act 2023."},{n:"System uptime / availability (%)",d:"SASB TC-SI operational reliability indicator."}],
+  ecommerce:[{n:"Number of customers served (annual)",d:"Sex-disaggregated. ADB DEMR."},{n:"Supplier / vendor ESG screening undertaken",d:"IFC PS 2 supply chain labour standards."},{n:"Consumer grievances resolved",d:"BII grievance mechanism."}],
+  other:[{n:"Scope 1 and 2 GHG emissions",d:"BII and IFC climate tracking as applicable."},{n:"Grievances received and resolved",d:"BII grievance mechanism obligations."}]
+};
+
+function buildFullESAP(){
+  const all=[...S.lpItems,...S.gapItems];
+  const mand=S.lpItems.filter(i=>i.cat==="LP Mandatory").length;
+  const pcfi=S.lpItems.filter(i=>i.cat==="LP Mandatory — PCFI").length;
+  const gaps=S.gapItems.length;
+  document.getElementById("full-stats").innerHTML=`
+    <div class="stat-card"><div class="label">LP Mandatory</div><div class="value" style="color:#dc2626">${mand}</div><div class="sub">IFC / ADB / BII</div></div>
+    <div class="stat-card"><div class="label">PCFI Mandatory</div><div class="value" style="color:#d97706">${pcfi}</div><div class="sub">${isFI()?"Financial institution":"Not applicable"}</div></div>
+    <div class="stat-card"><div class="label">Gap items</div><div class="value" style="color:#2563eb">${gaps}</div><div class="sub">From questionnaire</div></div>
+    <div class="stat-card"><div class="label">Total actions</div><div class="value">${all.length}</div><div class="sub">Full ESAP</div></div>`;
+  document.getElementById("esap-sub").textContent=`${S.company} · ${SECTOR_NAMES[S.sector]||S.sector} · ${S.geos.join(", ")} · Generated ${new Date().toLocaleDateString("en-IN")}`;
+  const esapEl=document.getElementById("full-esap-list");esapEl.innerHTML="";
+  let lastCat="";
+  all.forEach((item,i)=>{
+    const cat=item.cat||item.category||"";
+    if(cat!==lastCat){esapEl.innerHTML+=`<div class="section-div">${cat}</div>`;lastCat=cat;}
+    esapEl.innerHTML+=renderESAPItem(item,i);
+  });
+  // Metrics
+  const secM=SECTOR_METRICS[S.sector]||SECTOR_METRICS.other||[];
+  const metEl=document.getElementById("metrics-list");metEl.innerHTML="";
+  metEl.innerHTML+="<div class='section-div'>Universal — all portfolio companies</div>";
+  UNIVERSAL_METRICS.forEach(m=>metEl.innerHTML+=`<div class="metric-item"><div class="mname">${m.n}</div><div class="mdesc">${m.d}</div><div class="mmeta"><span class="pill p-green">Annual</span><span class="pill p-gray">All sectors</span></div></div>`);
+  if(secM.length){
+    metEl.innerHTML+=`<div class="section-div">Sector-specific — ${SECTOR_NAMES[S.sector]||S.sector}</div>`;
+    secM.forEach(m=>metEl.innerHTML+=`<div class="metric-item"><div class="mname">${m.n}</div><div class="mdesc">${m.d}</div><div class="mmeta"><span class="pill p-green">Annual</span><span class="pill p-blue">${SECTOR_NAMES[S.sector]||S.sector}</span></div></div>`);
+  }
+}
+
+// ─── EXPORTS ──────────────────────────────────────────────────────────────────
+function dt(){return new Date().toISOString().slice(0,10);}
+function fn(suffix){return `${S.company.replace(/\s+/g,"_")}_${suffix}_${dt()}.xlsx`;}
+
+function exportCat(){
+  const rows=[["ADB SPS 2009 & IFC Categorisation","","",""],["Company",S.company,"",""],["Sector",SECTOR_NAMES[S.sector]||S.sector,"",""],["Geographies",S.geos.join(", "),"",""],["Date",dt(),"",""],["","","",""],["Category","Result","Score threshold",""],["Environment (ADB)",document.getElementById("env-val").textContent,"≥35=C, ≥20=B, <20=A",""],["Inv. Resettlement (ADB)",document.getElementById("ir-val").textContent,"≥25=C, ≥20=B, <20=A",""],["Indigenous Peoples (ADB)",document.getElementById("ip-val").textContent,"≥30=C, ≥20=B, <20=A",""],["IFC Category",document.getElementById("ifc-val").textContent,"A/B/C",""],["","","",""],["Question responses","","",""]];
+  ENV_QS.forEach((q,i)=>rows.push([q.q,S.catAnswers["env_"+i]||""]));
+  IR_QS.forEach((q,i)=>rows.push([q.q,S.catAnswers["ir_"+i]||""]));
+  IP_QS.forEach((q,i)=>rows.push([q.q,S.catAnswers["ip_"+i]||""]));
+  IFC_QS.forEach((q,i)=>rows.push([q.q,S.catAnswers["ifc_"+i]||""]));
+  const ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:60},{wch:20},{wch:22},{wch:10}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Categorisation");XLSX.writeFile(wb,fn("Categorisation"));
+}
+
+function exportPIAL(){
+  const raw=document.getElementById("pial-body").innerText;
+  const blob=new Blob([`Blume Ventures GIFT Fund V — PIAL Rationale\nCompany: ${S.company}\nSector: ${SECTOR_NAMES[S.sector]||S.sector}\nGeographies: ${S.geos.join(", ")}\nDate: ${dt()}\n\n${"=".repeat(60)}\n\n${raw}`],{type:"text/plain"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`${S.company.replace(/\s+/g,"_")}_PIAL_Rationale_${dt()}.txt`;a.click();
+}
+
+function esapToRows(items){
+  const rows=[["#","Category","Action Item","Description","Source / Reference","Timeline","Priority","Status","Notes"]];
+  items.forEach((item,i)=>rows.push([i+1,item.cat||item.category||"",item.a||item.action||"",item.d||item.desc||"",item.src||item.source||"",item.tl||item.timeline||"",item.p||item.priority||"","",""]));
+  return rows;
+}
+const ESAP_COLS=[{wch:4},{wch:24},{wch:38},{wch:55},{wch:40},{wch:28},{wch:20},{wch:20},{wch:28}];
+
+function exportLPESAP(){
+  const ws=XLSX.utils.aoa_to_sheet(esapToRows(S.lpItems));ws["!cols"]=ESAP_COLS;
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"LP ESAP");XLSX.writeFile(wb,fn("LP_ESAP"));
+}
+
+function exportFullESAP(){
+  const all=[...S.lpItems,...S.gapItems];
+  const ws=XLSX.utils.aoa_to_sheet(esapToRows(all));ws["!cols"]=ESAP_COLS;
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Full ESAP");XLSX.writeFile(wb,fn("Full_ESAP"));
+}
+
+function exportMetrics(){
+  const secM=SECTOR_METRICS[S.sector]||[];
+  const rows=[["Metric","Description","Frequency","Sector"],["UNIVERSAL METRICS — ALL PORTFOLIO COMPANIES","","",""]];
+  UNIVERSAL_METRICS.forEach(m=>rows.push([m.n,m.d,"Annual","All"]));
+  if(secM.length){rows.push([`SECTOR-SPECIFIC — ${(SECTOR_NAMES[S.sector]||"").toUpperCase()}`,""]);secM.forEach(m=>rows.push([m.n,m.d,"Annual",SECTOR_NAMES[S.sector]||""]));}
+  const ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=[{wch:42},{wch:60},{wch:12},{wch:20}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Metrics");XLSX.writeFile(wb,fn("Annual_Metrics"));
+}
+
+function exportAll(){
+  exportCat();
+  setTimeout(exportPIAL,400);
+  setTimeout(exportLPESAP,800);
+  setTimeout(exportFullESAP,1200);
+  setTimeout(exportMetrics,1600);
+}
+</script>
+</body>
+</html>
